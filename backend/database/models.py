@@ -59,6 +59,21 @@ class DatabaseConfig:
             print(f"❌ Failed to connect to MongoDB (async): {e}")
             return False
     
+    def check_and_reconnect(self):
+        """Check connection and reconnect if needed"""
+        try:
+            if self.client and self.db:
+                # Test connection with a quick ping
+                self.client.admin.command('ping')
+                return True
+            else:
+                print("⚠️ No active MongoDB connection, reconnecting...")
+                return self.connect()
+        except Exception as e:
+            print(f"⚠️ MongoDB connection check failed: {e}")
+            print("🔄 Attempting to reconnect...")
+            return self.connect()
+    
     def close(self):
         """Close database connections"""
         if self.client:
@@ -71,11 +86,33 @@ class UserModel:
     
     def __init__(self, db_config: DatabaseConfig):
         self.db_config = db_config
-        self.collection = db_config.db[db_config.USERS_COLLECTION] if db_config.db is not None else None
+        self.collection = None
+        self.ensure_collection()
+    
+    def ensure_collection(self):
+        """Ensure collection is available and reconnect if needed"""
+        if self.collection is None:
+            # First try to use the existing connection
+            if self.db_config.db is not None:
+                self.collection = self.db_config.db[self.db_config.USERS_COLLECTION]
+                print(f"✅ User collection initialized from existing connection")
+            else:
+                # Try to reconnect
+                if self.db_config.check_and_reconnect():
+                    self.collection = self.db_config.db[self.db_config.USERS_COLLECTION]
+                    print(f"✅ User collection initialized after reconnection")
+                else:
+                    print(f"❌ Failed to initialize user collection")
+        return self.collection is not None
     
     def create_user(self, user_data: Dict) -> str:
         """Create a new user"""
         try:
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print("❌ Cannot create user: collection not available")
+                return None
+            
             # Hash password if provided
             if 'password' in user_data:
                 print(f"🔄 Hashing password for user: {user_data.get('email')}")
@@ -112,6 +149,11 @@ class UserModel:
     def get_user_by_id(self, user_id: str) -> Optional[Dict]:
         """Get user by ID"""
         try:
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print(f"❌ Cannot get user by ID: collection not available")
+                return None
+                
             # Try ObjectId first, then string user_id
             user = None
             if ObjectId.is_valid(user_id):
@@ -141,19 +183,19 @@ class UserModel:
         
         except Exception as e:
             print(f"❌ Error getting user: {e}")
+            # Try to reconnect and try again
+            if self.db_config.check_and_reconnect():
+                self.collection = self.db_config.db[self.db_config.USERS_COLLECTION]
+                return self.get_user_by_id(user_id)
             return None
     
     def get_user_by_email(self, email: str) -> Optional[Dict]:
         """Get user by email"""
         try:
-            # First check if we have a valid connection
-            if not self.client or not self.db:
-                print(f"⚠️ Database not connected when looking up email: {email}")
-                self.connect()  # Try to reconnect
-                
-            if not self.collection:
-                print(f"⚠️ Collection not available when looking up email: {email}")
-                self.collection = self.db[self.USERS_COLLECTION]
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print(f"❌ Cannot get user by email: collection not available")
+                return None
             
             # Attempt to find the user with more detailed logging
             print(f"🔍 Looking up user with email: {email}")
@@ -169,19 +211,12 @@ class UserModel:
         
         except Exception as e:
             print(f"❌ Error getting user by email: {e}")
-            print(f"Database status: Connected: {self.client is not None}, DB: {self.db is not None}, Collection: {self.collection is not None}")
+            print(f"Database status: Connected: {self.db_config.client is not None}, DB: {self.db_config.db is not None}, Collection: {self.collection is not None}")
             # Try to reconnect and try again
-            try:
-                print("🔄 Attempting to reconnect to database...")
-                self.connect()
-                self.collection = self.db[self.USERS_COLLECTION]
-                user = self.collection.find_one({"email": email})
-                if user:
-                    user['_id'] = str(user['_id'])
-                return user
-            except Exception as retry_error:
-                print(f"❌ Failed to reconnect and retrieve user: {retry_error}")
-                return None
+            if self.db_config.check_and_reconnect():
+                self.collection = self.db_config.db[self.db_config.USERS_COLLECTION]
+                return self.get_user_by_email(email)
+            return None
     
     def update_user(self, user_id: str, update_data: Dict) -> bool:
         """Update user information"""
@@ -280,11 +315,33 @@ class ChatHistoryModel:
     
     def __init__(self, db_config: DatabaseConfig):
         self.db_config = db_config
-        self.collection = db_config.db[db_config.CHAT_HISTORY_COLLECTION] if db_config.db is not None else None
+        self.collection = None
+        self.ensure_collection()
+    
+    def ensure_collection(self):
+        """Ensure collection is available and reconnect if needed"""
+        if self.collection is None:
+            # First try to use the existing connection
+            if self.db_config.db is not None:
+                self.collection = self.db_config.db[self.db_config.CHAT_HISTORY_COLLECTION]
+                print(f"✅ Chat history collection initialized from existing connection")
+            else:
+                # Try to reconnect
+                if self.db_config.check_and_reconnect():
+                    self.collection = self.db_config.db[self.db_config.CHAT_HISTORY_COLLECTION]
+                    print(f"✅ Chat history collection initialized after reconnection")
+                else:
+                    print(f"❌ Failed to initialize chat history collection")
+        return self.collection is not None
     
     def save_chat_message(self, user_id: str, message: str, response: str, analysis: Dict = None) -> str:
         """Save a chat message and response"""
         try:
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print(f"❌ Cannot save chat message: collection not available")
+                return None
+                
             print(f"🔄 Saving chat message for user_id: {user_id}")
             
             # Ensure we're using a consistent user_id format
@@ -322,6 +379,11 @@ class ChatHistoryModel:
     def get_chat_history(self, user_id: str, limit: int = 50) -> List[Dict]:
         """Get chat history for a user"""
         try:
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print(f"❌ Cannot get chat history: collection not available")
+                return []
+                
             print(f"🔄 Getting chat history for user_id: {user_id}, limit: {limit}")
             
             # Try multiple query approaches to ensure we find all relevant messages
@@ -392,11 +454,33 @@ class LearningSessionModel:
     
     def __init__(self, db_config: DatabaseConfig):
         self.db_config = db_config
-        self.collection = db_config.db[db_config.LEARNING_SESSIONS_COLLECTION] if db_config.db is not None else None
+        self.collection = None
+        self.ensure_collection()
+    
+    def ensure_collection(self):
+        """Ensure collection is available and reconnect if needed"""
+        if self.collection is None:
+            # First try to use the existing connection
+            if self.db_config.db is not None:
+                self.collection = self.db_config.db[self.db_config.LEARNING_SESSIONS_COLLECTION]
+                print(f"✅ Learning session collection initialized from existing connection")
+            else:
+                # Try to reconnect
+                if self.db_config.check_and_reconnect():
+                    self.collection = self.db_config.db[self.db_config.LEARNING_SESSIONS_COLLECTION]
+                    print(f"✅ Learning session collection initialized after reconnection")
+                else:
+                    print(f"❌ Failed to initialize learning session collection")
+        return self.collection is not None
     
     def create_learning_session(self, user_id: str, session_data: Dict) -> str:
         """Create a new learning session"""
         try:
+            # Ensure collection is available
+            if not self.ensure_collection():
+                print(f"❌ Cannot create learning session: collection not available")
+                return None
+            
             session_data.update({
                 'user_id': user_id,
                 'created_at': datetime.now(timezone.utc),
@@ -446,9 +530,17 @@ class LearningSessionModel:
 
 # Database instance (singleton pattern)
 db_config = DatabaseConfig()
-db_config.connect()
+connection_success = db_config.connect()
+print(f"🔄 Initial database connection attempt: {'✅ Success' if connection_success else '❌ Failed'}")
 
 # Model instances
 user_model = UserModel(db_config)
 chat_history_model = ChatHistoryModel(db_config)
 learning_session_model = LearningSessionModel(db_config)
+
+# Ensure collections are initialized
+user_model.ensure_collection()
+chat_history_model.ensure_collection()
+learning_session_model.ensure_collection()
+
+print(f"✅ Database models initialized")

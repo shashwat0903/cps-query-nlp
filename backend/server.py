@@ -5,8 +5,18 @@ from queryHandling.integrated_chat_handler import IntegratedChatHandler
 from routes.auth import router as auth_router
 from typing import List, Dict, Optional
 from datetime import datetime
-from database.models import user_model, chat_history_model, learning_session_model
+from database.models import user_model, chat_history_model, learning_session_model, db_config
 import bcrypt
+import os
+
+# Ensure database is connected on startup
+db_connected = db_config.check_and_reconnect()
+print(f"🔄 Database connection on startup: {'✅ Connected' if db_connected else '❌ Failed'}")
+
+# Initialize model collections
+user_model.ensure_collection()
+chat_history_model.ensure_collection()
+learning_session_model.ensure_collection()
 
 app = FastAPI()
 
@@ -594,6 +604,25 @@ async def google_auth_callback():
         "message": "Google OAuth callback should be handled by frontend Firebase",
         "status": "redirect_to_frontend"
     }
+
+# Add startup and shutdown events for database handling
+@app.on_event("startup")
+async def startup_db_client():
+    """Initialize database connection on startup"""
+    print("🔄 Startup event: Checking database connection...")
+    db_config.check_and_reconnect()
+    # Initialize collections
+    user_model.ensure_collection()
+    chat_history_model.ensure_collection()
+    learning_session_model.ensure_collection()
+    print("✅ Startup complete: Database connection verified")
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    """Close database connection on shutdown"""
+    print("🔄 Shutdown event: Closing database connections...")
+    db_config.close()
+    print("✅ Shutdown complete: Database connections closed")
 
 if __name__ == "__main__":
     import uvicorn

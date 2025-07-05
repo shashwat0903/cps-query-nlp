@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import GoogleIcon from '@mui/icons-material/Google';
-import { auth } from '../../firebase/config';
+// Firebase auth no longer used directly here
 import { useAuth } from '../../contexts/AuthContext';
 import Lottie from 'lottie-react';
 import aiAnimation from '../../assets/ai-lottie.json';

@@ -57,6 +57,9 @@ export interface UserProfile {
   full_name: string;
   skill_level: string;
   completed_topics: string[];
+  known_concepts?: string[]; // Added to match localStorageAuth
+  is_active?: boolean; // Added to match localStorageAuth
+  created_at?: string; // Added to match localStorageAuth
   statistics: {
     total_queries: number;
     topics_completed: number;

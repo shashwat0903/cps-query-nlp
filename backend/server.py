@@ -19,7 +19,11 @@ app.include_router(auth_router)
 # CORS setup to allow requests from frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",  # Local development
+        "https://cps-query-nlp.vercel.app",  # Vercel production URL
+        "https://cps-query-nlp-*.vercel.app"  # Vercel preview deployments
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,8 +37,100 @@ async def health_check():
         "status": "healthy",
         "message": "CPS Learning System API is running",
         "timestamp": datetime.now().isoformat(),
-        "database_status": "connected" if user_model.collection else "disconnected"
+        "database_status": "connected" if user_model.collection else "disconnected",
+        "version": "1.0.0",
+        "environment": "production"
     }
+
+@app.get("/status", include_in_schema=True)
+async def status_page():
+    """Status page with HTML output for easy viewing"""
+    db_status = "connected" if user_model.collection else "disconnected"
+    timestamp = datetime.now().isoformat()
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CPS Query NLP Backend Status</title>
+        <style>
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                margin: 40px auto;
+                max-width: 650px;
+                line-height: 1.6;
+                font-size: 18px;
+                color: #444;
+                padding: 0 10px;
+                background-color: #f9f9f9;
+            }}
+            h1, h2 {{
+                line-height: 1.2;
+                color: #333;
+            }}
+            .status {{
+                padding: 15px;
+                border-radius: 4px;
+                margin: 20px 0;
+            }}
+            .healthy {{
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+                color: #155724;
+            }}
+            .warning {{
+                background-color: #fff3cd;
+                border-color: #ffeeba;
+                color: #856404;
+            }}
+            .error {{
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+                color: #721c24;
+            }}
+            .info-grid {{
+                display: grid;
+                grid-template-columns: 150px 1fr;
+                gap: 10px;
+                margin: 20px 0;
+            }}
+            .label {{
+                font-weight: bold;
+            }}
+        </style>
+    </head>
+    <body>
+        <h1>CPS Query NLP Backend Status</h1>
+        
+        <div class="status {'healthy' if db_status == 'connected' else 'error'}">
+            <h2>Status: {'Healthy' if db_status == 'connected' else 'Error'}</h2>
+            <p>The backend API is {'running normally' if db_status == 'connected' else 'experiencing issues'}.</p>
+        </div>
+        
+        <div class="info-grid">
+            <span class="label">API Version:</span>
+            <span>1.0.0</span>
+            
+            <span class="label">Environment:</span>
+            <span>Production</span>
+            
+            <span class="label">Database:</span>
+            <span>{db_status}</span>
+            
+            <span class="label">Timestamp:</span>
+            <span>{timestamp}</span>
+        </div>
+        
+        <p>This page is used to verify the backend deployment status.</p>
+        <p><small>CPS Query NLP System &copy; 2025</small></p>
+    </body>
+    </html>
+    """
+    
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(content=html_content)
 
 class MessageRequest(BaseModel):
     message: str

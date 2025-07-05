@@ -83,7 +83,7 @@ const UserProfileForm: React.FC = () => {
         
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid component="div" sx={{ gridColumn: { xs: '1 / span 12', md: '1 / span 6' } }}>
               <TextField
                 fullWidth
                 label="Full Name"
@@ -93,7 +93,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
             
-            <Grid item xs={12} md={6}>
+            <Grid component="div" sx={{ gridColumn: { xs: '1 / span 12', md: '7 / span 6' } }}>
               <FormControl fullWidth required>
                 <InputLabel>Skill Level</InputLabel>
                 <Select
@@ -110,7 +110,7 @@ const UserProfileForm: React.FC = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid component="div" sx={{ gridColumn: { xs: '1 / span 12', md: '1 / span 6' } }}>
               <TextField
                 fullWidth
                 label="University"
@@ -119,7 +119,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid component="div" sx={{ gridColumn: { xs: '1 / span 12', md: '7 / span 6' } }}>
               <TextField
                 fullWidth
                 label="Degree"
@@ -128,7 +128,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid component="div" sx={{ gridColumn: { xs: '1 / span 12', md: '1 / span 6' } }}>
               <TextField
                 fullWidth
                 label="Year of Study"
@@ -137,7 +137,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid component="div" sx={{ gridColumn: '1 / span 12' }}>
               <Autocomplete
                 multiple
                 options={PROGRAMMING_LANGUAGES}
@@ -158,7 +158,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid component="div" sx={{ gridColumn: '1 / span 12' }}>
               <Autocomplete
                 multiple
                 options={INTERESTS}
@@ -179,7 +179,7 @@ const UserProfileForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid component="div" sx={{ gridColumn: '1 / span 12' }}>
               <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
                 <Button
                   type="submit"

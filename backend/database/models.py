@@ -3,6 +3,8 @@ MongoDB Database Configuration and Models
 """
 
 import os
+import ssl
+import certifi
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime, timezone
@@ -10,6 +12,8 @@ from typing import Dict, List, Optional, Any
 import bcrypt
 from bson import ObjectId
 import json
+
+from database.db_utils import get_mongodb_client, get_async_mongodb_client
 
 class DatabaseConfig:
     """Database configuration class"""
@@ -34,7 +38,8 @@ class DatabaseConfig:
     def connect(self):
         """Connect to MongoDB"""
         try:
-            self.client = MongoClient(self.MONGODB_URI)
+            # Use our utility function for a more robust connection
+            self.client = get_mongodb_client(self.MONGODB_URI)
             self.db = self.client[self.DATABASE_NAME]
             print(f"✅ Connected to MongoDB: {self.DATABASE_NAME}")
             return True
@@ -45,7 +50,8 @@ class DatabaseConfig:
     def connect_async(self):
         """Connect to MongoDB asynchronously"""
         try:
-            self.async_client = AsyncIOMotorClient(self.MONGODB_URI)
+            # Use our utility function for a more robust connection
+            self.async_client = get_async_mongodb_client(self.MONGODB_URI)
             self.async_db = self.async_client[self.DATABASE_NAME]
             print(f"✅ Connected to MongoDB (async): {self.DATABASE_NAME}")
             return True
@@ -140,14 +146,42 @@ class UserModel:
     def get_user_by_email(self, email: str) -> Optional[Dict]:
         """Get user by email"""
         try:
+            # First check if we have a valid connection
+            if not self.client or not self.db:
+                print(f"⚠️ Database not connected when looking up email: {email}")
+                self.connect()  # Try to reconnect
+                
+            if not self.collection:
+                print(f"⚠️ Collection not available when looking up email: {email}")
+                self.collection = self.db[self.USERS_COLLECTION]
+            
+            # Attempt to find the user with more detailed logging
+            print(f"🔍 Looking up user with email: {email}")
             user = self.collection.find_one({"email": email})
+            
             if user:
+                print(f"✅ Found user with email: {email}")
                 user['_id'] = str(user['_id'])
+            else:
+                print(f"⚠️ No user found with email: {email}")
+                
             return user
         
         except Exception as e:
             print(f"❌ Error getting user by email: {e}")
-            return None
+            print(f"Database status: Connected: {self.client is not None}, DB: {self.db is not None}, Collection: {self.collection is not None}")
+            # Try to reconnect and try again
+            try:
+                print("🔄 Attempting to reconnect to database...")
+                self.connect()
+                self.collection = self.db[self.USERS_COLLECTION]
+                user = self.collection.find_one({"email": email})
+                if user:
+                    user['_id'] = str(user['_id'])
+                return user
+            except Exception as retry_error:
+                print(f"❌ Failed to reconnect and retrieve user: {retry_error}")
+                return None
     
     def update_user(self, user_id: str, update_data: Dict) -> bool:
         """Update user information"""

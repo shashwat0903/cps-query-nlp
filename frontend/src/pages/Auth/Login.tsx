@@ -108,11 +108,9 @@ const Login: React.FC = () => {
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
           
-          // Use a shorter timeout for redirection
-          setTimeout(() => {
-            console.log('🔄 Navigating to /chat...');
-            navigate('/chat', { replace: true });
-          }, 1000);
+          // Directly navigate without setTimeout to avoid refresh issues
+          console.log('🔄 Directly navigating to /chat...');
+          window.location.href = '/chat'; // Force a full navigation instead of React Router
           return;
         } else {
           console.warn('❌ Backend login failed:', loginResponse.message);
@@ -134,12 +132,20 @@ const Login: React.FC = () => {
         console.log('🔄 Updating auth context with localStorage user profile...');
         await loginWithProfile(localLoginResponse.user);
         
+        // Set dummy Firebase user for AuthGuard
+        localStorage.setItem('firebaseUser', JSON.stringify({
+          uid: localLoginResponse.user.user_id || localLoginResponse.user.email,
+          email: localLoginResponse.user.email,
+          displayName: localLoginResponse.user.full_name || localLoginResponse.user.email
+        }));
+        
         setSnackbarMsg('Login successful (local mode)! Redirecting...');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-        setTimeout(() => {
-          navigate('/chat');
-        }, 1500);
+        
+        // Directly navigate without setTimeout to avoid refresh issues
+        console.log('🔄 Directly navigating to /chat from localStorage login...');
+        window.location.href = '/chat'; // Force a full navigation instead of React Router
       } else {
         console.error('❌ localStorage login failed:', localLoginResponse.message);
         throw new Error(localLoginResponse.message || 'Login failed.');
@@ -202,9 +208,10 @@ const Login: React.FC = () => {
       setSnackbarMsg('Google login successful! Redirecting...');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-      setTimeout(() => {
-        navigate('/chat');
-      }, 1000);
+      
+      // Directly navigate without setTimeout
+      console.log('🔄 Directly navigating to /chat from Google login...');
+      window.location.href = '/chat'; // Force a full navigation instead of React Router
     } catch (error: any) {
       console.error('❌ Google login error:', error);
       setSnackbarMsg('Google login failed: ' + (error.message || 'Unknown error'));

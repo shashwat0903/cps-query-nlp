@@ -19,33 +19,54 @@ def get_mongodb_client(uri=None):
     is_atlas = "mongodb+srv://" in uri
     
     try:
-        # Configure TLS/SSL options
-        client = MongoClient(
-            uri,
-            ssl=is_atlas,
-            ssl_ca_certs=certifi.where(),
-            serverSelectionTimeoutMS=5000,
-            connectTimeoutMS=10000,
-            retryWrites=True
-        )
+        # Simplest connection approach first - let PyMongo handle the URI parsing
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
         
         # Test the connection
         client.admin.command('ping')
-        print(f"✅ MongoDB connection successful")
+        print(f"✅ MongoDB connection successful with simple approach")
         return client
         
     except Exception as e:
-        print(f"❌ Failed to connect with standard SSL: {e}")
+        print(f"❌ Failed to connect with simple approach: {e}")
         
         try:
-            # Fallback with less strict SSL for some hosting environments
-            client = MongoClient(
-                uri,
-                ssl=is_atlas,
-                ssl_cert_reqs=ssl.CERT_NONE,
-                serverSelectionTimeoutMS=5000,
-                connectTimeoutMS=10000
-            )
+            # Try again with explicit TLS settings
+            if is_atlas:
+                client = MongoClient(
+                    uri,
+                    tls=True,
+                    tlsCAFile=certifi.where(),
+                    serverSelectionTimeoutMS=5000
+                )
+            else:
+                client = MongoClient(
+                    uri,
+                    serverSelectionTimeoutMS=5000
+                )
+                
+            # Test the connection
+            client.admin.command('ping')
+            print(f"✅ MongoDB connection successful with explicit TLS")
+            return client
+                
+        except Exception as e2:
+            print(f"❌ Failed to connect with explicit TLS: {e2}")
+            
+            try:
+                # Last attempt with minimal parameters
+                client = MongoClient(uri)
+                client.admin.command('ping')
+                print(f"✅ MongoDB connection successful with minimal parameters")
+                return client
+            except Exception as e3:
+                print(f"❌ All connection attempts failed: {e3}")
+                raise
+                client = MongoClient(
+                    uri,
+                    serverSelectionTimeoutMS=5000,
+                    connectTimeoutMS=10000
+                )
             client.admin.command('ping')
             print(f"✅ MongoDB connection successful with fallback SSL settings")
             return client
@@ -65,30 +86,42 @@ def get_async_mongodb_client(uri=None):
     is_atlas = "mongodb+srv://" in uri
     
     try:
-        # Configure TLS/SSL options
-        client = AsyncIOMotorClient(
-            uri,
-            ssl=is_atlas,
-            ssl_ca_certs=certifi.where(),
-            serverSelectionTimeoutMS=5000,
-            connectTimeoutMS=10000,
-            retryWrites=True
-        )
-        print(f"✅ Async MongoDB connection created")
+        # Simplest connection approach first
+        client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
+        print(f"✅ Async MongoDB connection created with simple approach")
         return client
         
     except Exception as e:
-        print(f"❌ Failed to create async connection with standard SSL: {e}")
+        print(f"❌ Failed to create async connection with simple approach: {e}")
         
         try:
-            # Fallback with less strict SSL for some hosting environments
-            client = AsyncIOMotorClient(
-                uri,
-                ssl=is_atlas,
-                ssl_cert_reqs=ssl.CERT_NONE,
-                serverSelectionTimeoutMS=5000,
-                connectTimeoutMS=10000
-            )
+            # Try again with explicit TLS settings
+            if is_atlas:
+                client = AsyncIOMotorClient(
+                    uri,
+                    tls=True,
+                    tlsCAFile=certifi.where(),
+                    serverSelectionTimeoutMS=5000
+                )
+            else:
+                client = AsyncIOMotorClient(
+                    uri,
+                    serverSelectionTimeoutMS=5000
+                )
+            print(f"✅ Async MongoDB connection created with explicit TLS")
+            return client
+            
+        except Exception as e2:
+            print(f"❌ Failed to create async connection with explicit TLS: {e2}")
+            
+            try:
+                # Last attempt with minimal parameters
+                client = AsyncIOMotorClient(uri)
+                print(f"✅ Async MongoDB connection created with minimal parameters")
+                return client
+            except Exception as e3:
+                print(f"❌ All async connection attempts failed: {e3}")
+                raise
             print(f"✅ Async MongoDB connection created with fallback SSL settings")
             return client
             

@@ -1,0 +1,19 @@
+{
+  "queries": [
+    {
+      "query": "I want to learn about binary trees",
+      "timestamp": "2025-07-05T01:09:48.085130",
+      "processed": false
+    },
+    {
+      "query": "I want to learn about binary trees",
+      "timestamp": "2025-07-05T01:11:10.666820",
+      "processed": false
+    },
+    {
+      "query": "Hello! I want to learn about graph algorithms.",
+      "timestamp": "2025-07-05T02:31:07.227305",
+      "processed": false
+    }
+  ]
+}

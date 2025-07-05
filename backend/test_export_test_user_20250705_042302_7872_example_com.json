@@ -1,0 +1,59 @@
+{
+  "user_profile": {
+    "user_id": "68685b518e9de0739649a0db",
+    "email": "test_user_20250705_042302_7872@example.com",
+    "full_name": "Test User 7872",
+    "skill_level": "beginner",
+    "completed_topics": [],
+    "known_concepts": [],
+    "preferences": {
+      "difficulty_preference": "beginner",
+      "learning_style": "mixed",
+      "topics_of_interest": []
+    },
+    "statistics": {
+      "total_queries": 1,
+      "topics_completed": 0,
+      "total_study_time": 0,
+      "last_active": "2025-07-05T04:23:09.877000"
+    }
+  },
+  "chat_history": [
+    {
+      "_id": "68685b558e9de0739649a0dd",
+      "user_id": "test_user_20250705_042302_7872_example_com",
+      "message": "What are arrays in Python?",
+      "response": "Great question about Array! ",
+      "analysis": {
+        "gaps": [],
+        "learning_path": [],
+        "next_step": null,
+        "next_step_explanation": null,
+        "next_step_videos": [],
+        "known_topics": [],
+        "mentioned_topics": [
+          "Array"
+        ],
+        "graph_based": true,
+        "learning_session_active": true,
+        "progress_tracking": true
+      },
+      "timestamp": "2025-07-04T22:53:09.820000",
+      "session_id": "test_user_20250705_042302_7872_example_com_20250704"
+    }
+  ],
+  "export_metadata": {
+    "export_date": "2025-07-05T04:23:12.114753",
+    "export_version": "1.0",
+    "total_messages": 1,
+    "user_id": "test_user_20250705_042302_7872_example_com"
+  },
+  "statistics": {
+    "total_queries": 1,
+    "topics_completed": 0,
+    "total_study_time": 0,
+    "last_active": "2025-07-05T04:23:09.877000"
+  },
+  "completed_topics": [],
+  "profile_data": {}
+}

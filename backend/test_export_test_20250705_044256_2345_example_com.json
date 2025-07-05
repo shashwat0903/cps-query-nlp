@@ -1,0 +1,213 @@
+{
+  "user_profile": {
+    "_id": "68685ffbb38ecf185073fe0d",
+    "user_id": "test_20250705_044256_2345_example_com",
+    "email": "test_20250705_044256_2345@example.com",
+    "full_name": "Test User 2345",
+    "skill_level": "advanced",
+    "completed_topics": [],
+    "known_concepts": [],
+    "current_learning_path": [],
+    "preferences": {
+      "difficulty_preference": "intermediate",
+      "learning_style": "mixed",
+      "topics_of_interest": [],
+      "time_per_session": 30
+    },
+    "statistics": {
+      "total_queries": 2,
+      "topics_completed": 0,
+      "total_study_time": 0,
+      "last_active": "2025-07-05T04:43:13.053511"
+    },
+    "profile_data": {
+      "university": "Updated University",
+      "degree": "Computer Science",
+      "year": "4th Year",
+      "interests": [
+        "Python",
+        "Machine Learning",
+        "Data Structures",
+        "Web Development"
+      ],
+      "programming_languages": [
+        "Python",
+        "JavaScript",
+        "Java",
+        "C++"
+      ],
+      "goals": [
+        "Master DSA",
+        "Build advanced projects",
+        "Get a job"
+      ]
+    },
+    "is_active": true,
+    "created_at": "2025-07-04T23:12:59.779000",
+    "last_updated": "2025-07-05T04:43:19.589534",
+    "updated_at": "2025-07-04T23:13:19.589000"
+  },
+  "chat_history": [
+    {
+      "_id": "68686008b38ecf185073fe0f",
+      "user_id": "test_20250705_044256_2345_example_com",
+      "message": "Explain binary search tree insertion with examples",
+      "response": "Great question about Insertion! Here's your suggested learning path: Traversal\n\n\ud83c\udfaf **Let's start with: Traversal**\n\nAfter you understand Traversal, just say 'next topic' or 'I understand' to continue to the next step!",
+      "analysis": {
+        "gaps": [],
+        "learning_path": [
+          "Traversal"
+        ],
+        "next_step": "Traversal",
+        "next_step_explanation": "Great question about **Traversal**! This is an important concept in data structures and algorithms.\n\n\ud83d\udee4\ufe0f **Suggested learning path**: Traversal",
+        "next_step_videos": [
+          {
+            "title": "5.1 Graph Traversals - BFS & DFS -Breadth First Search and Depth First Search",
+            "url": "https://www.youtube.com/watch?v=pcKY4hjDrxk",
+            "description": "Video tutorial on Traversal | 4.3M views | Duration: 18m 31s",
+            "channel": "Abdul Bari",
+            "duration": "18m 31s",
+            "views": "4.3M views"
+          },
+          {
+            "title": "G-5. Breadth-First Search (BFS) | C++ and Java | Traversal Technique in Graphs",
+            "url": "https://www.youtube.com/watch?v=-tgVpUgsQ5k",
+            "description": "Video tutorial on Traversal | 699.9K views | Duration: 19m 39s",
+            "channel": "take U forward",
+            "duration": "19m 39s",
+            "views": "699.9K views"
+          },
+          {
+            "title": "Spiral Traversal of a Matrix | Spiral Matrix",
+            "url": "https://www.youtube.com/watch?v=3Zv-s9UUrFM",
+            "description": "Video tutorial on Traversal | 348.8K views | Duration: 16m 33s",
+            "channel": "take U forward",
+            "duration": "16m 33s",
+            "views": "348.8K views"
+          },
+          {
+            "title": "Data Structure Tree Traversing | Learn Coding",
+            "url": "https://www.youtube.com/watch?v=uoA93qaX7UQ",
+            "description": "Video tutorial on Traversal | 208.6K views | Duration: 16m 32s",
+            "channel": "Learn Coding",
+            "duration": "16m 32s",
+            "views": "208.6K views"
+          },
+          {
+            "title": "Binary Tree Level Order Traversal | Programming Tutorials",
+            "url": "https://www.youtube.com/watch?v=x-7w6PWhBR8",
+            "description": "Video tutorial on Traversal | 881 views | Duration: 11m 8s",
+            "channel": "Programming Tutorials",
+            "duration": "11m 8s",
+            "views": "881 views"
+          }
+        ],
+        "known_topics": [],
+        "mentioned_topics": [],
+        "graph_based": true,
+        "learning_session_active": true,
+        "progress_tracking": true
+      },
+      "timestamp": "2025-07-04T23:13:12.777000",
+      "session_id": "test_20250705_044256_2345_example_com_20250704"
+    },
+    {
+      "_id": "68686008b38ecf185073fe10",
+      "user_id": "test_20250705_044256_2345_example_com",
+      "message": "Explain binary search tree insertion with examples",
+      "response": "Great question about Insertion! Here's your suggested learning path: Traversal\n\n\ud83c\udfaf **Let's start with: Traversal**\n\nAfter you understand Traversal, just say 'next topic' or 'I understand' to continue to the next step!",
+      "analysis": {
+        "gaps": [],
+        "learning_path": [
+          "Traversal"
+        ],
+        "next_step": "Traversal",
+        "next_step_explanation": "Great question about **Traversal**! This is an important concept in data structures and algorithms.\n\n\ud83d\udee4\ufe0f **Suggested learning path**: Traversal",
+        "next_step_videos": [
+          {
+            "title": "5.1 Graph Traversals - BFS & DFS -Breadth First Search and Depth First Search",
+            "url": "https://www.youtube.com/watch?v=pcKY4hjDrxk",
+            "description": "Video tutorial on Traversal | 4.3M views | Duration: 18m 31s",
+            "channel": "Abdul Bari",
+            "duration": "18m 31s",
+            "views": "4.3M views"
+          },
+          {
+            "title": "G-5. Breadth-First Search (BFS) | C++ and Java | Traversal Technique in Graphs",
+            "url": "https://www.youtube.com/watch?v=-tgVpUgsQ5k",
+            "description": "Video tutorial on Traversal | 699.9K views | Duration: 19m 39s",
+            "channel": "take U forward",
+            "duration": "19m 39s",
+            "views": "699.9K views"
+          },
+          {
+            "title": "Spiral Traversal of a Matrix | Spiral Matrix",
+            "url": "https://www.youtube.com/watch?v=3Zv-s9UUrFM",
+            "description": "Video tutorial on Traversal | 348.8K views | Duration: 16m 33s",
+            "channel": "take U forward",
+            "duration": "16m 33s",
+            "views": "348.8K views"
+          },
+          {
+            "title": "Data Structure Tree Traversing | Learn Coding",
+            "url": "https://www.youtube.com/watch?v=uoA93qaX7UQ",
+            "description": "Video tutorial on Traversal | 208.6K views | Duration: 16m 32s",
+            "channel": "Learn Coding",
+            "duration": "16m 32s",
+            "views": "208.6K views"
+          },
+          {
+            "title": "Binary Tree Level Order Traversal | Programming Tutorials",
+            "url": "https://www.youtube.com/watch?v=x-7w6PWhBR8",
+            "description": "Video tutorial on Traversal | 881 views | Duration: 11m 8s",
+            "channel": "Programming Tutorials",
+            "duration": "11m 8s",
+            "views": "881 views"
+          }
+        ],
+        "known_topics": [],
+        "mentioned_topics": [],
+        "graph_based": true,
+        "learning_session_active": true,
+        "progress_tracking": true
+      },
+      "timestamp": "2025-07-04T23:13:12.921000",
+      "session_id": "test_20250705_044256_2345_example_com_20250704"
+    }
+  ],
+  "export_metadata": {
+    "export_date": "2025-07-05T04:43:21.904795",
+    "export_version": "1.0",
+    "total_messages": 2,
+    "user_id": "test_20250705_044256_2345_example_com"
+  },
+  "statistics": {
+    "total_queries": 2,
+    "topics_completed": 0,
+    "total_study_time": 0,
+    "last_active": "2025-07-05T04:43:13.053511"
+  },
+  "completed_topics": [],
+  "profile_data": {
+    "university": "Updated University",
+    "degree": "Computer Science",
+    "year": "4th Year",
+    "interests": [
+      "Python",
+      "Machine Learning",
+      "Data Structures",
+      "Web Development"
+    ],
+    "programming_languages": [
+      "Python",
+      "JavaScript",
+      "Java",
+      "C++"
+    ],
+    "goals": [
+      "Master DSA",
+      "Build advanced projects",
+      "Get a job"
+    ]
+  }
+}

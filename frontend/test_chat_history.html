@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat History Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #result { padding: 10px; border: 1px solid #ccc; margin-top: 10px; }
+        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; cursor: pointer; margin: 5px; }
+        input { padding: 8px; width: 300px; margin: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Chat History Test</h1>
+    <div>
+        <h2>Test Parameters</h2>
+        <div>
+            <label for="userId">User ID:</label>
+            <input type="text" id="userId" value="test_user_1751710547">
+        </div>
+        <div>
+            <label for="apiUrl">API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost:8080">
+        </div>
+        <button id="testBtn">Test Chat History</button>
+    </div>
+    <div>
+        <h2>Results</h2>
+        <pre id="result">Results will appear here...</pre>
+    </div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const userId = document.getElementById('userId').value;
+            const apiUrl = document.getElementById('apiUrl').value;
+            const resultElement = document.getElementById('result');
+            
+            resultElement.innerHTML = 'Testing...';
+            
+            try {
+                // Test get chat history
+                const historyRes = await fetch(`${apiUrl}/api/user/${userId}/chat-history`);
+                const historyData = await historyRes.json();
+                
+                if (historyRes.ok) {
+                    if (historyData.chat_history && historyData.chat_history.length > 0) {
+                        resultElement.innerHTML = `
+                        <div class="success">✅ Successfully retrieved ${historyData.chat_history.length} chat messages!</div>
+                        <h3>Chat History</h3>
+                        <pre>${JSON.stringify(historyData, null, 2)}</pre>
+                        `;
+                    } else {
+                        resultElement.innerHTML = `
+                        <div class="error">⚠️ Chat history is empty. No messages found.</div>
+                        <h3>API Response</h3>
+                        <pre>${JSON.stringify(historyData, null, 2)}</pre>
+                        `;
+                    }
+                } else {
+                    resultElement.innerHTML = `
+                    <div class="error">❌ Failed to get chat history: ${historyRes.status}</div>
+                    <h3>API Response</h3>
+                    <pre>${JSON.stringify(historyData, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `
+                <div class="error">❌ Error: ${error.message}</div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

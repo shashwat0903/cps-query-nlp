@@ -96,13 +96,23 @@ const Login: React.FC = () => {
           
           console.log('✅ Profile refreshed, chat history length:', loginResponse.chat_history?.length || 0);
           
+          // Set a dummy Firebase user object to satisfy AuthGuard
+          // AuthGuard checks for user, not userProfile
+          localStorage.setItem('firebaseUser', JSON.stringify({
+            uid: loginResponse.user.user_id,
+            email: loginResponse.user.email,
+            displayName: loginResponse.user.full_name
+          }));
+          
           setSnackbarMsg('Login successful! Redirecting...');
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
           
+          // Use a shorter timeout for redirection
           setTimeout(() => {
-            navigate('/chat');
-          }, 1500);
+            console.log('🔄 Navigating to /chat...');
+            navigate('/chat', { replace: true });
+          }, 1000);
           return;
         } else {
           console.warn('❌ Backend login failed:', loginResponse.message);

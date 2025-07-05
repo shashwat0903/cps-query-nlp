@@ -75,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isFirebaseUser) {
         // It's a Firebase user, we need to call the backend login
         console.log('🔄 AuthContext: Firebase user detected, calling backend login');
+        setUser(userData); // Set Firebase user immediately
+        
         const loginResponse = await userAPI.login(userData.email || '', userData.uid);
         console.log('✅ AuthContext: Backend login response:', loginResponse);
         
@@ -94,7 +96,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         // It's our own user object, use it directly
         console.log('🔄 AuthContext: Custom user detected, setting directly');
+        
+        // Create a dummy Firebase user to satisfy auth checks
+        const dummyUser = {
+          uid: userId,
+          email: userData.email,
+          displayName: userData.full_name || userData.email
+        };
+        
+        // Set both user states
+        setUser(dummyUser as any);
         setUserProfile(userData);
+        
+        // Save the dummy user for persistence
+        localStorage.setItem('firebaseUser', JSON.stringify(dummyUser));
+        
         if (userData.chat_history) {
           setChatHistory(userData.chat_history);
           localStorage.setItem('chatHistory', JSON.stringify(userData.chat_history));
@@ -309,6 +325,98 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return unsubscribe;
   }, [loginWithProfile, userProfile]);
+
+  // Check for authenticated user on init
+  useEffect(() => {
+    console.log('🔄 AuthContext: Checking for authenticated user');
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log('🔄 AuthContext: Firebase auth state changed:', firebaseUser);
+      
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const userId = firebaseUser.email?.replace('@', '_').replace(/\./g, '_') || firebaseUser.uid;
+        console.log('✅ AuthContext: Firebase user found, userId:', userId);
+        
+        // Load user profile and chat history
+        fetchProfileAndHistory(userId)
+          .catch(err => console.error('❌ Failed to fetch profile after auth state change:', err));
+      } else {
+        console.log('🔄 AuthContext: No Firebase user, checking localStorage');
+        
+        // Check for a stored user profile as fallback
+        const storedProfile = localStorage.getItem('userProfile');
+        const storedFirebaseUser = localStorage.getItem('firebaseUser');
+        
+        if (storedFirebaseUser) {
+          try {
+            const parsedUser = JSON.parse(storedFirebaseUser);
+            console.log('✅ AuthContext: Found stored Firebase user:', parsedUser);
+            // Create a User-like object
+            setUser(parsedUser as any);
+            
+            if (storedProfile) {
+              const parsedProfile = JSON.parse(storedProfile);
+              setUserProfile(parsedProfile);
+              console.log('✅ AuthContext: Loaded stored profile');
+              
+              const storedHistory = localStorage.getItem('chatHistory');
+              if (storedHistory) {
+                setChatHistory(JSON.parse(storedHistory));
+                console.log('✅ AuthContext: Loaded stored chat history');
+              }
+            }
+          } catch (e) {
+            console.error('❌ AuthContext: Error parsing stored user:', e);
+            localStorage.removeItem('firebaseUser');
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('chatHistory');
+            setUser(null);
+            setUserProfile(null);
+            setChatHistory([]);
+          }
+        } else if (storedProfile) {
+          try {
+            const parsedProfile = JSON.parse(storedProfile);
+            console.log('✅ AuthContext: Found stored profile without Firebase user:', parsedProfile);
+            
+            // Create a dummy User object to satisfy auth checks
+            const dummyUser = {
+              uid: parsedProfile.user_id || parsedProfile.email,
+              email: parsedProfile.email,
+              displayName: parsedProfile.full_name
+            };
+            
+            setUser(dummyUser as any);
+            setUserProfile(parsedProfile);
+            
+            const storedHistory = localStorage.getItem('chatHistory');
+            if (storedHistory) {
+              setChatHistory(JSON.parse(storedHistory));
+            }
+            
+            // Save the dummy user
+            localStorage.setItem('firebaseUser', JSON.stringify(dummyUser));
+          } catch (e) {
+            console.error('❌ AuthContext: Error parsing stored profile:', e);
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('chatHistory');
+            setUser(null);
+            setUserProfile(null);
+            setChatHistory([]);
+          }
+        } else {
+          console.log('🔄 AuthContext: No stored profile, user is not authenticated');
+          setUser(null);
+          setUserProfile(null);
+          setChatHistory([]);
+        }
+      }
+      
+      setLoading(false);
+    });
+    
+    return () => unsubscribe();
+  }, [fetchProfileAndHistory]);
 
   // Effect for loading initial state from localStorage
   useEffect(() => {
